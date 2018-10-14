@@ -4,15 +4,18 @@ import net.misskey4j.adapters.HomeStreamAdapter
 import net.misskey4j.adapters.MisskeyAdapter
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ExpectedException
 import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
 import org.junit.rules.TestWatcher
-import org.junit.rules.ExpectedException
 import org.junit.runner.Description
 
 
 class MisskeyTest {
-    private const val TOKEN = ""
+
+    companion object {
+        private const val TOKEN = ""
+    }
 
     private val thrown = ExpectedException.none()
 
