@@ -1,9 +1,6 @@
 package net.misskey4j
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonObject
-import com.google.gson.JsonSyntaxException
+import com.google.gson.*
 import net.misskey4j.listeners.MisskeyListener
 import net.misskey4j.listeners.NoteListener
 import java.io.IOException
@@ -19,9 +16,11 @@ import java.util.*
 //TODO: 画像アップロード
 //TODO: Gson to org.json...? これじゃ効率悪すぎ Enumが...
 class Misskey(
-        private val configuration: Configuration
+        internal val configuration: Configuration
 )  {
     companion object {
+        internal val parser = JsonParser()
+
         internal val gson = GsonBuilder().registerTypeAdapter(Calendar::class.java, JsonDeserializer { json, _, _ ->
             GregorianCalendar.from(ZonedDateTime.ofInstant(Instant.parse(json.asString), ZoneId.systemDefault()))
         }).registerTypeAdapter(Geolocation::class.java, JsonDeserializer { json, _, _ ->
@@ -51,6 +50,8 @@ class Misskey(
             Reactions(value)
         }).create()
     }
+
+    private val mainStream: MainStream? = null
 
     private var homeStream: HomeStream? = null
     internal val streamListeners = EnumMap<StreamType, ArrayList<NoteListener>>(StreamType::class.java)
@@ -144,6 +145,7 @@ class Misskey(
     /**
      * Start the home streaming. this can be use rest api.
      */
+    @Deprecated("All of stream connection is replaced by /streaming", replaceWith = ReplaceWith("startStreaming()"))
     fun homeTimeline() {
         homeStream = HomeStream(this, URI(configuration.getStreamBaseURL() + "?i=" + configuration.getToken()))
     }
@@ -151,6 +153,7 @@ class Misskey(
     /**
      * Start the global streaming
      */
+    @Deprecated("All of stream connection is replaced by /streaming")
     fun globalTimeline() {
         globalStream = NoteStream(this, StreamType.GLOBAL, URI(configuration.getStreamBaseURL() + "global-timeline?i=" + configuration.getToken()))
     }
@@ -158,6 +161,7 @@ class Misskey(
     /**
      * Start the local streaming
      */
+    @Deprecated("All of stream connection is replaced by /streaming")
     fun localTimeline() {
         localStream = NoteStream(this, StreamType.LOCAL, URI(configuration.getStreamBaseURL() + "local-timeline?i=" + configuration.getToken()))
     }

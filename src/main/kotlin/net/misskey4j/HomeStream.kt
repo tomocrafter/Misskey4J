@@ -6,6 +6,7 @@ import net.misskey4j.listeners.HomeStreamListener
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
 
+@Deprecated("All of stream connection is replaced by /streaming")
 class HomeStream(
         private val misskey: Misskey,
         uri: URI
@@ -13,20 +14,20 @@ class HomeStream(
 
     private val responseListeners = hashMapOf<String, (JsonObject) -> Unit>()
 
-    override fun onOpen(handshakedata: ServerHandshake) {
+    override fun onOpen() {
         misskey.streamListeners[StreamType.HOME]?.forEach {
             it.onConnected()
         }
     }
 
-    override fun onClose(code: Int, reason: String, remote: Boolean) {
+    override fun onClose() {
         misskey.streamListeners[StreamType.HOME]?.forEach {
             it.onDisconnect()
         }
     }
 
     override fun onMessage(message: String) {
-        val root = JsonParser().parse(message).asJsonObject
+        val root = Misskey.parser.parse(message).asJsonObject
         val type = root["type"].asString
         when (type) {
             "note" -> {

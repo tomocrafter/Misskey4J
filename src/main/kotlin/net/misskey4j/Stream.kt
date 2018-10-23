@@ -10,15 +10,21 @@ abstract class Stream(
         uri: URI
 ) : WebSocketClient(uri) {
     init {
-        super.connectBlocking()
         isTcpNoDelay = true
+        super.connectBlocking()
     }
 
-    abstract override fun onOpen(handshakedata: ServerHandshake)
+    override fun onOpen(handshakedata: ServerHandshake?) {
+        onOpen()
+    }
 
-    abstract override fun onClose(code: Int, reason: String, remote: Boolean)
+    override fun onClose(code: Int, reason: String?, remote: Boolean) {
+        onClose()
+    }
 
-    abstract override fun onMessage(message: String)
+    abstract fun onOpen()
+
+    abstract fun onClose()
 
     override fun onError(ex: Exception) {
         val e = MisskeyException(ex)
